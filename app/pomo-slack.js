@@ -1,6 +1,7 @@
 import axios from 'axios';
 import moment from 'moment';
 import {getWorkItemByNumber, updateActual, getAssetLink} from './v1-api';
+import {getV1UserFromSlack} from './slack2v1';
 import {hours,minutes,getOptions,getCommand} from './utils';
 
 let user_hash = {};
@@ -100,8 +101,10 @@ function done(user){
 		}
 		if (workComplete(user)) {
 			console.info("sending actual info");
-			//hack: need a way to look up user member oid and need to make sure date is same as server
-			updateActual(0.5, "Member:1040", data.scopeOid, data.workItemOid, data.time_start.format('YYYY-MM-DD'));
+			getV1UserFromSlack(user).then(v1UserOid=> {
+				//hack: need to make sure date is same as server
+				updateActual(hours(user.minutes), v1UserOid, user.scopeOid, user.workItemOid, user.time_start.format('YYYY-MM-DD'));
+			});
 		}else{
 			console.warn("not updating effort");
 		}
