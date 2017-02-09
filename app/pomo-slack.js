@@ -1,6 +1,8 @@
 import axios from 'axios';
 import moment from 'moment';
 import {getWorkItemByNumber, updateActual, getAssetLink} from './v1-api';
+import {hours,minutes,getOptions,getCommand} from './utils';
+
 let user_hash = {};
 
 const commands = {
@@ -9,25 +11,6 @@ const commands = {
 	'status': (opt,data) => pomo_status(data.user_name),
 	'yesterday': () => "forthcoming"
 };
-
-const minutes =(int) => 15000;//int * 60 * 1000;
-
-function getCommand(str) {
-	const trimmed = str.trim();
-	if (trimmed.indexOf(' ') === -1)
-		return trimmed;
-	else
-		return trimmed.substr(0, trimmed.indexOf(' '));
-}
-
-function getOptions(str){
-	const trimmed = str.trim();
-	if (trimmed.indexOf(' ') === -1)
-		return null;
-	else
-		return trimmed.substr(trimmed.indexOf(' ')+1);
-}
-
 
 export default function(requestBody){
 	const pomo_command = getCommand(requestBody.text);
@@ -85,6 +68,7 @@ function start_pomo_timer(data) {
 	u.time_start = moment();
 	u.response_url = data.response_url;
 	u.user_name= user_name;
+	u.user_id = data.user_id;
 
 	if(u.type == "work") {
 		u.type = "break";
@@ -101,20 +85,20 @@ function start_pomo_timer(data) {
 function workComplete(data) {
 	return data.type === "work" && data.scopeOid && data.workItemOid;
 }
-function done(data){
+function done(user){
 	return ()=> {
-		if (data.response_url) {
-			console.info(`ending pomo by sending a message to ${data.response_url}`);
-			const message = workComplete(data)? `Pomo timer complete for ${data.user_name} : ${data.assetLink}! That ends the *${data.type}* phase and your effort has been recorded. Type '/pomo start to take a break`
-				:`Pomo timer complete for ${data.user_name}! That ends the *${data.type}* phase. Type '/pomo start to start the next phase`;
-			axios.post(data.response_url, {
+		if (user.response_url) {
+			console.info(`ending pomo by sending a message to ${user.response_url}`);
+			const message = workComplete(user)? `Pomo timer complete for @${user.user_name} : ${user.assetLink}! That ends the *${user.type}* phase and your effort has been recorded. Type '/pomo start to take a break`
+				:`Pomo timer complete for @${user.user_name}! That ends the *${user.type}* phase. Type '/pomo start to start the next phase`;
+			axios.post(user.response_url, {
 							text: message,
 							response_type: 'in_channel'
 						});
 		} else {
-			console.warn(`no response url for ${data.user_name} ${data.time_start}`);
+			console.warn(`no response url for ${user.user_name} ${user.time_start}`);
 		}
-		if (workComplete(data)) {
+		if (workComplete(user)) {
 			console.info("sending actual info");
 			//hack: need a way to look up user member oid and need to make sure date is same as server
 			updateActual(0.5, "Member:1040", data.scopeOid, data.workItemOid, data.time_start.format('YYYY-MM-DD'));
