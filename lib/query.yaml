@@ -1,0 +1,51 @@
+from: Story
+filter:
+  - Owners.IsSelf="true"
+  - AssetState="Active"
+  - Status.Name!="Done"
+select:
+  - Name
+  - Number
+  - Description
+  - Status.Name
+sort:
+- +Order
+---
+from: Defect
+filter:
+  - Owners.IsSelf="true"
+  - AssetState="Active"
+  - Status.Name!="Done"
+select:
+  - Name
+  - Number
+  - Description
+  - Status.Name
+sort:
+- +Order
+---
+from: Test
+filter:
+  - Owners.IsSelf="true"
+  - AssetState="Active"
+  - Status.Name!="Passed"
+select:
+  - Name
+  - Number
+  - Description
+  - Status.Name
+sort:
+- +Order
+---
+from: Task
+filter:
+  - Owners.IsSelf="true"
+  - AssetState="Active"
+  - Status.Name!="Completed"
+select:
+  - Name
+  - Number
+  - Description
+  - Status.Name
+sort:
+- +Order
