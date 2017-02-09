@@ -22,11 +22,13 @@ app.route('/pomo')
 	});
 
 app.route('/member').get((req,res)=>{
-	getMemberByEmail('claus.customer@company.com').then((output) => res.status(200).send(output.data));
+	getMemberByEmail(req.query.email).then((output) => res.status(200).send(output.data));
 });
 
 app.route('/workitem').get((req,res)=>{
-	getWorkItemByNumber('B-01004').then((result) => res.status(200).send(result.data));
+	getWorkItemByNumber(req.query.number).then((result) => {
+		res.status(200).send(result.data)
+	});
 });
 
 app.route('/pomodone').get((req,res)=>{
