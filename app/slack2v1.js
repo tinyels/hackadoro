@@ -8,6 +8,7 @@ export function getV1UserFromSlack(user_id) {
 	return axios.get(url).then(slack=> {
 		const email = slack.data.profile.email;
 		return getMemberByEmail(email).then(v1=>{
+			console.log("got oid for", email);
 			return v1.data[0][0]._oid;
 		})
 		.catch(v1Error => console.error("v1", slackError));
