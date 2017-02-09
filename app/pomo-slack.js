@@ -101,7 +101,7 @@ function done(user){
 		}
 		if (workComplete(user)) {
 			console.info("sending actual info");
-			getV1UserFromSlack(user).then(v1UserOid=> {
+			getV1UserFromSlack(user.user_id).then(v1UserOid=> {
 				//hack: need to make sure date is same as server
 				updateActual(hours(user.minutes), v1UserOid, user.scopeOid, user.workItemOid, user.time_start.format('YYYY-MM-DD'));
 			});
