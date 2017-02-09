@@ -51,11 +51,12 @@ export function getWorkItemByNumber(number){
 }
 
 export function updateActual(hours, memberOidToken, scopeOidToken, workitemOidToken, date) {
+	console.log("updateActual", ...arguments);
 	v1(v1AccessToken).create('Actual',{
 		Value: hours,
 		Member: memberOidToken,
 		Scope: scopeOidToken,
 		Workitem: workitemOidToken,
 		Date: date
-	});
+	}).catch(ruh_ro=> console.error("updateActual went wrong", ruh_ro));
 }
