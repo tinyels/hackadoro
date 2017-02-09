@@ -7,7 +7,7 @@ const axiosConnectedSdk = axiosConnector(axios)(sdk);
 const isHttps = v1Protocol === 'https';
 export const v1 = (token) => axiosConnectedSdk(v1Host, v1Instance, v1Port, isHttps).withAccessToken(token);
 
-const MY_WORK_QUERY = readFileSync('./lib/query.yaml', 'utf8');
+const MY_WORK_QUERY = readFileSync('./app/query.yaml', 'utf8');
 
 export const getAssetLink = (number) => `${v1RootUrl}/assetdetail.v1?Number=${number}`
 
