@@ -21,6 +21,25 @@ function queryV1(query){ //can't use YAML with v1sdk
 	});
 	return instance.post("/query.v1", query);
 }
+export function myWorkitems(userOid){ //Member:399984
+	return queryV1({
+		"from": "PrimaryWorkitem",
+		"filter": [
+		"Owners=\"" + userOid + "\"",
+		"AssetState=\"Active\"",
+		"Status.Name!=\"Done\""
+	],
+		"select": [
+		"Name",
+		"Number",
+		"Description",
+		"Status.Name"
+	],
+		"sort": [
+		"+Order"
+	]
+	}).then(r => r.data[0].map(item => ({number: item['Number'], name: item['Name'], status:item['Status.Name']})));
+}
 
 export function getEffort(userOid,date){
 	return queryV1({

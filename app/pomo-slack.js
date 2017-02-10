@@ -1,6 +1,6 @@
 import axios from 'axios';
 import moment from 'moment';
-import {getWorkItemByNumber, updateActual, getAssetLink, getEffort} from './v1-api';
+import {getWorkItemByNumber, updateActual, getAssetLink, getEffort, myWorkitems} from './v1-api';
 import {getV1UserFromSlack} from './slack2v1';
 import {minutes,getOptions,getCommand} from './utils';
 
@@ -10,7 +10,8 @@ const commands = {
 	'start' : (opt,data) => pomo_start(data, opt),
 	'stop'  : (opt,data) => pomo_stop(data, opt),
 	'status': (opt,data) => pomo_status(data),
-	'today': (opt, data) => get_today(data)
+	'today' : (opt,data) => get_today(data),
+	'mine'  : (opt,data) => my_work(data)
 };
 
 export default function(requestBody){
@@ -133,18 +134,29 @@ function get_today(data){
 	);
 }
 
+function my_work(data){
+	const response_url =data.response_url;
+	getOrUseV1UserOid(data, (id) =>	myWorkitems(id)).then(items => {
+			const details = items.map(i => `${getAssetLink(i.number)}: ${i.name} (${i.status||'None'})`).join("\n");
+			if (response_url) {
+				axios.post(response_url, {
+					text: details
+				});
+			}
+		}
+	);
+}
+
 function getOrUseV1UserOid(data, callback) {
 	const user = getUser(data);
 	return new Promise(
 		function (resolve, reject) {
 			if (!user.v1UserOid) {
-				console.log('hi')
 				return getV1UserFromSlack(user.user_id).then(v1UserOid => {
 					user.v1UserOid = v1UserOid;
 					resolve(callback(user.v1UserOid));
 				});
 			}else {
-				console.log('ho')
 				resolve(callback(user.v1UserOid));
 			}
 		}
