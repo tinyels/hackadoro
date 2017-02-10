@@ -11,6 +11,7 @@ const commands = {
 	'stop'  : (opt,data) => pomo_stop(data, opt),
 	'status': (opt,data) => pomo_status(data),
 	'today' : (opt,data) => get_today(data),
+	'yesterday' : (opt,data) => get_yesterday(data),
 	'mine'  : (opt,data) => my_work(data)
 };
 
@@ -122,9 +123,18 @@ function done(user){
 }
 
 function get_today(data){
+	const date = moment().format(DATE_FORMAT);
+	get_work_for(data,date);
+}
+function get_yesterday(data){
+	const date = moment().subtract(1,'days').format(DATE_FORMAT);
+	get_work_for(data,date);
+}
+
+function get_work_for(data, date){
 	const response_url =data.response_url;
-	getOrUseV1UserOid(data, (id) =>	getEffort(id, moment().format(DATE_FORMAT))).then(items => {
-		const details = Object.keys(items).map(num => `${getAssetLink(num)}: ${items[num].name} (${items[num].val})`).join("\n");
+	getOrUseV1UserOid(data, (id) =>	getEffort(id, date)).then(items => {
+			const details = Object.keys(items).map(num => `${getAssetLink(num)}: ${items[num].name} (${items[num].val})`).join("\n");
 			if (response_url) {
 				axios.post(response_url, {
 					text: details
