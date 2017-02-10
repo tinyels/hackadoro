@@ -1,4 +1,6 @@
 import { v1RootUrl} from './env';
+var DataAnonymizer = require('data-anonymizer');
+var a = new DataAnonymizer({ seed: 'my secret seed' });
 
 export function transformToPomodoneJson(data){
 	let stories = data[0];
@@ -55,16 +57,18 @@ export function transformToPomodoneJson(data){
 
 }
 
+const anon = (str) => str? a.anonymize(str):"";
 
 function convert(listName){
 	return (item) => {
+		var num = anon(item.Number)
 		return ({
-			title: item.Name,
-			uuid: item.Number,
+			title: anon(item.Name),
+			uuid: num,
 			parent: listName,
-			description: item.Description,
+			description: anon(item.Description),
 			"source": "custom",
-			"permalink": `${v1RootUrl}/assetdetail.v1?Number=${item.Number}`
+			"permalink": `${v1RootUrl}/assetdetail.v1?Number=${num}`
 		});
 	}
 }

@@ -15,6 +15,7 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-2": "^6.11.0",
     "body-parser": "^1.14.2",
+    "data-anonymizer": "git+https://github.com/joostvunderink/js-data-anonymizer.git",
     "dotenv": "^4.0.0",
     "express": "^4.13.3",
     "moment": "^2.17.1",
