@@ -101,8 +101,8 @@ function done(user){
 		const assetLink = user.assetLink;
 		if (response_url) {
 			console.info(`ending pomo by sending a message to ${response_url}`);
-			const message = workComplete(user)? `Pomo timer complete for @${user.user_name} : ${assetLink}! That ends the *${user.type}* phase and your effort has been recorded. Type '/pomo start to take a break`
-				:`Pomo timer complete for @${user.user_name}! That ends the *${user.type}* phase. Type '/pomo start to start the next phase`;
+			const message = workComplete(user)? `Pomo timer complete for <@${user.user_id}> : ${assetLink}! That ends the *${user.type}* phase and your effort has been recorded. Type '/pomo start to take a break`
+				:`Pomo timer complete for <@${user.user_id}>! That ends the *${user.type}* phase. Type '/pomo start to start the next phase`;
 			axios.post(user.response_url, {
 							text: message,
 							response_type: 'in_channel'
