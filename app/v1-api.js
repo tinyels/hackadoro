@@ -9,7 +9,7 @@ export const v1 = (token) => axiosConnectedSdk(v1Host, v1Instance, v1Port, isHtt
 
 const MY_WORK_QUERY = readFileSync('./app/query.yaml', 'utf8');
 
-export const getAssetLink = (number) => `${v1RootUrl}/assetdetail.v1?Number=${number}`
+export const getAssetLink = (number) => `<${v1RootUrl}/assetdetail.v1?Number=${number}|${number}>`
 
 function queryV1(query){ //can't use YAML with v1sdk
 	const instance = axios.create({
@@ -20,6 +20,39 @@ function queryV1(query){ //can't use YAML with v1sdk
 		}
 	});
 	return instance.post("/query.v1", query);
+}
+
+export function getEffort(userOid,date){
+	return queryV1({
+		from:"Actual",
+		filter:[
+			"Member=\"" + userOid + "\"",
+			"Date=\"" + date + "\""
+		],
+		select: [
+			"Value",
+			"Workitem.Name",
+			"Workitem.Number"
+		]
+	}).then(r=>{
+		console.log("getEffort", userOid, date);
+		let items = {};
+		r.data[0].forEach((item)=>{
+			const num =  item['Workitem.Number'];
+			let curr = items[num];
+			if (!items[num]) {
+				curr = items[num] = {};
+				curr.number = num;
+				curr.name = item['Workitem.Name'];
+				curr.val = 0.0;
+			}
+			curr.val = curr.val + parseFloat(item.Value);
+		});
+		Object.keys(items).forEach(function (key) {
+			items[key].val = items[key].val.toFixed(2);
+		});
+		return items;
+	});
 }
 export function getMyWork(){
 	return queryV1(MY_WORK_QUERY);
