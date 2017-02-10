@@ -122,15 +122,14 @@ function done(user){
 
 function get_today(data){
 	const response_url =data.response_url;
-	getOrUseV1UserOid(data, (id) =>	getEffort(id, moment().format(DATE_FORMAT))).then(val => {
+	getOrUseV1UserOid(data, (id) =>	getEffort(id, moment().format(DATE_FORMAT))).then(items => {
+		const details = Object.keys(items).map(num => `${getAssetLink(num)}: ${items[num].name} (${items[num].val})`).join("\n");
 			if (response_url) {
 				axios.post(response_url, {
-					text: JSON.stringify(val),
-					response_type: 'in_channel'
+					text: details
 				});
 			}
 		}
-
 	);
 }
 
