@@ -1,4 +1,4 @@
-export const minutes =(int) => 15000;//int * 60 * 1000;
+export const minutes = (int) => int * 60 * 1000;
 
 export const hours = (inMinutes) => parseFloat((inMinutes/60.0).toFixed(2));
 
